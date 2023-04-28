@@ -64,6 +64,7 @@ Documentation released as LLNL-WEB-848349.
     How it works <about/working>
     References <about/citing>
     License <about/license>
+    GitHub repo <https://github.com/mkite-group>
 
 .. toctree::
     :caption: Setting up
