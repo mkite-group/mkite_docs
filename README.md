@@ -1,6 +1,6 @@
 # mkite_docs
 
-`mkite_docs` has all the content for the main mkite tutorial and documentation, available at https://www.mkite.org.
+`mkite_docs` has all the content for the main mkite tutorial and documentation, available at https://mkite.org.
 
 ## Development
 
