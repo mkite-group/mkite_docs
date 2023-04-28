@@ -51,7 +51,9 @@ The mkite toolkit was developed by `Daniel Schwalbe-Koda <https://dskoda.com>`_ 
 
 Released under the Apache 2.0 (with LLVM exception) License.
 
-LLNL-CODE-XXXXXX
+LLNL-CODE-848161
+
+Documentation released as LLNL-WEB-848349.
 
 
 .. toctree::
