@@ -36,6 +36,6 @@ Finally, if you are setting up a server, you will have to install the main datab
 
 .. code-block:: bash
 
-   pip install mkite_db
+   pip install mkite
 
-If you are setting up a client only (say, for running jobs in an HPC environment), you do not need to install the ``mkite_db`` package.
+If you are setting up a client only (say, for running jobs in an HPC environment), you do not need to install the ``mkite`` package.
