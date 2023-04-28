@@ -1,0 +1,9 @@
+MAX_PENDING: 100
+MAX_RUNNING: 3
+MAX_READY: 100
+SCHEDULER: slurm
+LOG_PATH: ${_self_}/jobs
+BUILD_CONFIG: ${_self_}/build_config.yaml
+ENGINE_LOCAL: ${_self_}/engine.yaml
+ENGINE_EXTERNAL: ${_self_}/engine.yaml
+ENGINE_ARCHIVE: ${_self_}/engine.yaml

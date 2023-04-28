@@ -1,0 +1,19 @@
+default:
+  nodes: 1
+  tasks_per_node: 36
+  walltime: "24:00:00"
+  partition: pbatch
+  account: acct
+  pre_cmd: |
+    source /home/user/.bashrc
+    source /home/user/envs/mkite/bin/activate
+  cmd: kite run
+  post_cmd: |
+    touch mkwind-complete
+
+conformer.generation:
+  nodes: 1
+  tasks_per_node: 1
+  walltime: "30:00"
+  partition: pdebug
+  cmd: kite run

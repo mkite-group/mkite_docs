@@ -1,0 +1,10 @@
+- out_experiment: 01_conformers
+  out_recipe: conformer.generation
+  tags:
+    - conformer
+  options:
+    num_conformers_returned: 1
+  inputs:
+    - filter:
+        parentjob__experiment__name: 01_conformers
+        parentjob__recipe__name: dbimport.MolFileImporter

@@ -1,0 +1,8 @@
+{
+    "job": {"uuid": "75879e52-4bc6-4623-9f91-2721db0aa7c9"},
+    "recipe": {"name": "conformer.generation"},
+    "inputs": [
+        {"smiles": "CN1C=NC2=C1C(=O)N(C(=O)N2C)C"}
+    ],
+    "options": {"force_field": "uff"}
+}
