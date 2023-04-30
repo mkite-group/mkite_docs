@@ -5,7 +5,7 @@ Configuring mkite
 Configuration files
 -------------------
 
-Now that mkite is installed and the database/engine is up, we can combine all configuration files for mkite in a single folder. We provide a template for this folder at https://github.com/mkite-group/configs_template, which we will use to fill in the information when setting up a new server.
+Now that mkite is installed and the database/engine is up, we can combine all configuration files for mkite in a single folder. We provide a template for this folder at https://github.com/mkite-group/mkite_configs, which we will use to fill in the information when setting up a new server.
 
 .. tip::
 
@@ -20,21 +20,18 @@ An example of configuration file structure is:
 
     .
     ├── clusters
-    │   ├── cluster1.yaml
-    │   ├── cluster2.yaml
+    │   ├── cpu.yaml
+    │   ├── gpu.yaml
     │   └── local.yaml
     ├── db
-    │   ├── local.env
-    │   └── cloud.env
+    │   └── local.env
     ├── engines
-    │   ├── global.yaml
-    │   ├── archive.yaml
-    │   ├── redis-cloud.yaml
-    │   └── redis-local.yaml
+    │   ├── local-jobs.yaml
+    │   ├── local-archive.yaml
+    │   └── redis-cloud.yaml
     └── mkwind
-        ├── cluster1.yaml
-        ├── cluster2.yaml
-        └── local.yaml
+        ├── local.yaml
+        └── cpu.yaml
 
 Configurations for mkite usually rely on two things:
 
