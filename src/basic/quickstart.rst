@@ -175,7 +175,7 @@ The job does not have to be executed from the command line. If you prefer to run
 .. code-block:: python
 
    from mkite_core.models import JobInfo
-   from mkite_conformer.recipes import ConformerGenerationRecipe
+   from mkite_conformer.recipes.rdkit import ConformerGenerationRecipe
 
    inputs = [{"smiles": "CN1C=NC2=C1C(=O)N(C(=O)N2C)C"}]
    options = {"force_field": "mmff"}
@@ -187,9 +187,9 @@ The job does not have to be executed from the command line. If you prefer to run
         recipe={},
         inputs=inputs,
         options=options,
-    )
-    recipe = ConformerGenerationRecipe(info)
-    results = recipe.run()
+   )
+   recipe = ConformerGenerationRecipe(info)
+   results = recipe.run()
 
 With the code above, we will generate the same ``JobResults`` that were previously in a JSON file, but now directly into the Python environment.
 
@@ -223,7 +223,7 @@ We can create different folders for each of the jobs and run them in parallel:
 
     import os
     from mkite_core.models import JobInfo
-    from mkite_conformer.recipes import ConformerGenerationRecipe
+    from mkite_conformer.recipes.rdkit import ConformerGenerationRecipe
 
     molecules = {
         "benzene": "c1ccccc1",
