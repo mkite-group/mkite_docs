@@ -22,7 +22,7 @@ Set up job specifications
 Jobs in mkite are created using the ``JobInfo`` class in ``mkite_core.models``. A ``JobInfo`` is essentially a JSON file with a predefined schema, however. You can create the basic specifications for a conformer generation job like the following:
 
 .. code-block:: json
-   
+
     {
         "job": {},
         "recipe": {"name": "conformer.generation"},
@@ -153,14 +153,15 @@ If you have a visualization package installed, you can see the result of the cal
     results = JobResults.from_json("jobresults.json")
     conf = ConformerInfo.from_dict(results.nodes[0].chemnode)
     atoms = conf.as_ase()
-    
+
     nv.show_ase(atoms)
 
 The snippet above converts the ChemNode into a ConformerInfo, which is just a class that mimics the ``Conformer`` table in ``mkite_db``, but without the need for a database. Then, we convert the ConformerInfo into an ``ase.Atoms`` object that can be visualized with nglview. The result should be similar to:
 
-.. image:: _img/caffeine.png
-    :align: center
-    :alt: 3D conformation of a caffeine molecule
+..
+    .. image:: _img/caffeine.png
+        :align: center
+        :alt: 3D conformation of a caffeine molecule
 
 With that, we have run our first job in mkite.
 
@@ -180,7 +181,7 @@ The job does not have to be executed from the command line. If you prefer to run
    inputs = [{"smiles": "CN1C=NC2=C1C(=O)N(C(=O)N2C)C"}]
    options = {"force_field": "mmff"}
 
-   # because we are going to specify the recipe, we do not 
+   # because we are going to specify the recipe, we do not
    # have to specify it.
    info = JobInfo(
         job={},
@@ -214,9 +215,9 @@ Increasing the throughput
 Creating and executing several jobs
 ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
 
-Now that we have created the conformer for one molecule, it is very simple to extend that functionality for others. 
-For example, if we wanted to increase the throughput of the calculations, we could create several JobInfo files. 
-Say we wanted to create conformers for each of the molecules in the `MD17 dataset from Chmiela et al. (2017) <https://doi.org/10.1126/sciadv.1603015>`_. 
+Now that we have created the conformer for one molecule, it is very simple to extend that functionality for others.
+For example, if we wanted to increase the throughput of the calculations, we could create several JobInfo files.
+Say we wanted to create conformers for each of the molecules in the `MD17 dataset from Chmiela et al. (2017) <https://doi.org/10.1126/sciadv.1603015>`_.
 We can create different folders for each of the jobs and run them in parallel:
 
 .. code-block:: python
@@ -254,7 +255,7 @@ We can create different folders for each of the jobs and run them in parallel:
 With all these jobs in their own directories, we can parallelize them by using a bash script:
 
 .. code-block:: bash
-   
+
     #!/bin/bash
 
     for job_folder in job_*
@@ -263,7 +264,7 @@ With all these jobs in their own directories, we can parallelize them by using a
         kite run -i jobinfo.json &
         cd ..
     done
-    
+
     wait
 
 This script runs all conformer generation jobs and waits for their completion.
