@@ -33,4 +33,12 @@ They can be created using the ``create_experiment`` command as:
 
    kitedb create_experiment PROJECT_NAME EXPERIMENT_NAME
 
+If this is your first time running kitedb you will need to initialize the database
+
+.. code-block:: bash
+
+   kitedb makemigrations base jobs calcs mols structs workflow
+   kitedb migrate
+
+
 With this, a new experiment titled ``EXPERIMENT_NAME`` will be created under the project ``PROJECT_NAME``.
