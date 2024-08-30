@@ -181,7 +181,7 @@ The job does not have to be executed from the command line. If you prefer to run
    inputs = [{"smiles": "CN1C=NC2=C1C(=O)N(C(=O)N2C)C"}]
    options = {"force_field": "mmff"}
 
-   # because we are going to specify the recipe, we do not
+   # because we are using the recipe, we do not
    # have to specify it.
    info = JobInfo(
         job={},
@@ -224,7 +224,6 @@ We can create different folders for each of the jobs and run them in parallel:
 
     import os
     from mkite_core.models import JobInfo
-    from mkite_conformer.recipes.rdkit import ConformerGenerationRecipe
 
     molecules = {
         "benzene": "c1ccccc1",
@@ -247,6 +246,7 @@ We can create different folders for each of the jobs and run them in parallel:
         info = JobInfo(
             job={},
             recipe={},
+            recipe={"name": "conformer.generation"},
             inputs=get_inputs(smiles),
             options=options,
         )
