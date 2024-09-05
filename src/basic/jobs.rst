@@ -14,8 +14,8 @@ Start by creating a project and experiment for this project:
 
 .. code-block:: bash
 
-   ./manage.py create_project md17
-   ./manage.py create_experiment md17 01_import
+   kitedb create_project md17
+   kitedb create_experiment md17 01_import
 
 Then, add to the database all recipes based on the entry points:
 
@@ -138,7 +138,7 @@ As the main database keeps track of all the jobs and results from calculations, 
 
    Jobs generated with the ``create_from_file`` and ``create`` command in mkite are added to the database with status ``READY`` by default.
    This means that the job is waiting for execution.
-   
+
 The command ``submit`` finds all jobs that are marked as ``READY``, serializes them, and sends them to a given engine.
 
 Submitting to a local engine
@@ -153,7 +153,7 @@ To submit a job to a folder that is monitored by mkwind (local engine), create a
     root_path: ${_self_}/jobs
     move: True
 
-The description above says that new jobs are going to be created in the ``jobs`` folder in the same directory as the ``engine.yaml`` file. 
+The description above says that new jobs are going to be created in the ``jobs`` folder in the same directory as the ``engine.yaml`` file.
 For now, this means that all our folders will be lumped in the same directory.
 While this helps our tutorial to be easier, it is undesirable in production, when you should have several ``engine.yaml`` files.
 

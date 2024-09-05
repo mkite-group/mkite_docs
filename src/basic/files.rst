@@ -28,7 +28,7 @@ With the `dbimport` command, one can import the file into the database:
 
 .. code-block:: bash
 
-   ./manage.py dbimport MolFileImporter -f FILE_PATH -p PROJECT_NAME -e EXPERIMENT_NAME
+   kitedb dbimport MolFileImporter -f FILE_PATH -p PROJECT_NAME -e EXPERIMENT_NAME
 
 This will parse the file at ``FILE_PATH`` and add it to the database under the project ``PROJECT_NAME`` and experiment ``EXPERIMENT_NAME``.
 Each line in the YAML file adds a new entry in the table ``Molecule`` in the database.
@@ -43,7 +43,7 @@ To do so, simply use the ``AseFileImporter``:
 
 .. code-block:: bash
 
-   ./manage.py dbimport AseFileImporter -f FILE_PATH -p PROJECT_NAME -e EXPERIMENT_NAME
+   kitedb dbimport AseFileImporter -f FILE_PATH -p PROJECT_NAME -e EXPERIMENT_NAME
 
 This will parse the file at ``FILE_PATH`` and add it to the database under the project ``PROJECT_NAME`` and experiment ``EXPERIMENT_NAME``.
 If parsing conformers, you can specify which molecule it belongs to by setting a ``smiles`` attribute in the file (e.g., second line of an extended XYZ file).
@@ -59,7 +59,7 @@ Importing data from the Materials Project
 -----------------------------------------
 
 As public databases such as the Materials Project (MP) are excellent source of resources for further calculations, it is useful to have an interface that parses information from these databases directly into your mkite database.
-To perform that, we use the ``mp_api`` interface to query the MP database according to a set of desired properties. 
+To perform that, we use the ``mp_api`` interface to query the MP database according to a set of desired properties.
 For example, an example of input file could be:
 
 .. code-block:: json
@@ -75,7 +75,7 @@ For example, an example of input file could be:
         }
     ]
 
-The file above uses the ``summary`` REST interface for the MP and searches all systems of composition "Cu" with ``energy_above_hull`` between 0 and 0.1 eV, and ``num_sites`` between 1 and 15. 
+The file above uses the ``summary`` REST interface for the MP and searches all systems of composition "Cu" with ``energy_above_hull`` between 0 and 0.1 eV, and ``num_sites`` between 1 and 15.
 Thus, the JSON file only contains the arguments passed to the MP rester in the original package.
 More advanced queries can be performed by following the ``mp_api`` guide.
 
