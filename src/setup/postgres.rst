@@ -54,6 +54,8 @@ Starting the PostgreSQL database
 
         pg_ctl -D /usr/local/var/postgres start
 
+    This command may vary according to your installation. Please verify instructions after installing postgres.
+
 Creating a new PostgreSQL database
 ----------------------------------
 
