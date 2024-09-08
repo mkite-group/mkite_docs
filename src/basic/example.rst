@@ -311,7 +311,7 @@ Now, if you were to open the ``kitedb shell_plus`` command again, you can see th
 
 The result should be only a list containing ``["R"]``, which says that there is a single status for all the jobs with recipe ``conformer.generation`` and experiment ``02_conformer``: running (``R``).
 
-Running the jobs
+running the jobs
 ----------------
 
 As the jobs have been submitted, you can now execute them directly.
@@ -376,7 +376,68 @@ Because of the nature of the small molecules and the conformer generation, the j
 Postprocessing the jobs
 ^^^^^^^^^^^^^^^^^^^^^^^
 
-Once the jobs
+As the jobs are being completed, you can use the ``mkwind postprocess`` daemon to send the result to the Redis engine:
 
-in the folder `scripts`, run `parse.sh` to make the production database access the redis engine and ingest the results into the postgresql db.
-from there on, you should be able to query your results.
+.. code-block:: bash
+
+   mkwind postprocess -s $MKITE_CFG/mkwind/settings.yaml -l 120
+
+The postprocessing command goes into each of the job folders, parses the ``jobresults.json`` file, and sends it to the Redis engine.
+If the ``jobresults.json`` does not exist, the job will be deemed as a failure, and the entire folder will be sent to ``queue-error``.
+In this case, the Redis engine will also receive a notification that the job has terminated with an error.
+This can be used to restart the job (advanced tutorial) or simply mark it with an ``ERROR`` status in the main production database.
+
+Importantly, the ``mkwind postprocess`` daemon archives the job if it has been completed successfully.
+The ``settings.yaml`` file should contain a local engine that is used for archival purposes.
+Once the job is submitted successfully to the Redis engine, the original job folder will be compressed into a tarfile and moved to a place specified by the archiving engine.
+The tarfile will be named after the UUID of the job, making it easier to find the original files after the job is completed.
+
+Parsing the jobs
+----------------
+
+At any time of the execution, you can execute the script ``scripts/parse.sh`` to parse jobs that have been completed, and whose information has been added to the Redis engine.
+To do that, simply go to the ``scripts`` folder and run ``parse.sh``:
+
+.. code-block:: bash
+
+   cd scripts
+   ./parse.sh
+
+The contents of the ``parse.sh`` file are very similar to the contents of the ``submit.sh``:
+
+.. code-block:: bash
+
+    #!/bin/bash
+
+    echo "----------------------------"
+    echo $(date)
+    echo "----------------------------"
+
+    #export MKITE_CFG=$HOME/prj/mkite/configs
+    export ENGINE=$MKITE_CFG/engines/redis-hydrogen.yaml
+
+    kitedb parse $ENGINE
+
+Essentially, the script is instructing mkite to connect to the engine specified by the ``redis-hydrogen.yaml`` configuration file, and parsing the jobs that finished correctly into the main production database.
+
+After executing this command, you can check how many jobs have completed by opening the ``kitedb shell_plus`` and performing a simple query:
+
+.. code-block:: python
+
+   jobs = Job.objects.filter(recipe__name="conformer.generation", experiment__name="02_conformer")
+   print(jobs.values_list("status").annotate(count=Count("status")))
+
+The query above will show pairs of (status, count) for the jobs of recipe ``conformer.generation`` and experiment ``02_conformer``.
+If all jobs have finished, the result of the code above should be
+
+.. code-block:: text
+
+    <QuerySet [('D', 388)]>
+
+which says that all 388 jobs have status ``DONE``.
+
+
+Querying the results
+--------------------
+
+Once the jobs
