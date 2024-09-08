@@ -7,18 +7,18 @@ As before, we will use the ``mkite_conformers`` plugin to exemplify this tutoria
 The rationale for this is simple: one can easily run thousands of conformer generation calculations for small molecules without significant computational overhead.
 Thus, the user learning this tutorial can have immediate feedback on how to use the mkite code without having to wait for actual, production DFT calculations.
 
-This tutorial assumes that you have read the :doc:`basic tutorial <tutorial>` for mkite, which explains how to setup the databases, the engines, and so on.
+This tutorial assumes that you have read the :doc:`basic tutorial <index>` for mkite, which explains how to setup the databases, the engines, and so on.
 See the requirements below before proceeding:
 
 Requirements
 ------------
 
-* You have :doc:`set up a PostgreSQL database <setup/postgres>` and created an ``.env`` :doc:`configuration file <setup/configs>` containing the credentials to access the database. The database is running, and you have full access to it.
-* You have :doc:`set up a Redis engine <setup/engine>` and created a ``.yaml`` :doc:`configuration file <setup/configs>` containing the credentials to access the engine. The Redis engine is running, and you have full access to it.
-* You have :doc:`set up a local engine <setup/engine>` (i.e., folders in the computer that will run the simulations) and created a ``.yaml`` :doc:`configuration file <setup/configs>` containing the credentials to access the engine.
-* You have :doc:`set up your mkwind client <basic/mkwind>` along with the necessary configuration files to build jobs locally on the computer that will run the simulations. If you have not, we recommend using the `example configuration files <TODO>`_ as starting point, where you will define a local folder where your jobs will be built/run/postprocessed.
+* You have :doc:`set up a PostgreSQL database </setup/postgres>` and created an ``.env`` :doc:`configuration file </setup/configs>` containing the credentials to access the database. The database is running, and you have full access to it.
+* You have :doc:`set up a Redis engine </setup/engine>` and created a ``.yaml`` :doc:`configuration file </setup/configs>` containing the credentials to access the engine. The Redis engine is running, and you have full access to it.
+* You have :doc:`set up a local engine </setup/engine>` (i.e., folders in the computer that will run the simulations) and created a ``.yaml`` :doc:`configuration file </setup/configs>` containing the credentials to access the engine.
+* You have :doc:`set up your mkwind client <mkwind>` along with the necessary configuration files to build jobs locally on the computer that will run the simulations. If you have not, we recommend using the `example configuration files <https://github.com/mkite-group/mkite_configs>`_ as starting point, where you will define a local folder where your jobs will be built/run/postprocessed.
 * You should have a functional scheduler where to run the jobs. If you are running on an HPC server that has SLURM, for instance, you can specify that on the configuration file above.
-  If you would like to run the files locally (like this example), you can install a scheduler such as `pueue <TODO>`_ to manage the job submissions.
+  If you would like to run the files locally (like this example), you can install a scheduler such as `pueue <https://github.com/Nukesor/pueue>`_ to manage the job submissions, as explained in the :doc:`mkwind tutorial <mkwind>`.
 
 Downloading and understanding the example
 -----------------------------------------
