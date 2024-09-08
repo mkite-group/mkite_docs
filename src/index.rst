@@ -81,6 +81,7 @@ Documentation released as LLNL-WEB-848349.
 
     15-min quickstart <basic/quickstart>
     Tutorial <basic/index>
+    Example Project <basic/example>
 
 .. toctree::
     :caption: Advanced guide

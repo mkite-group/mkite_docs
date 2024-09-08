@@ -33,7 +33,7 @@ They can be created using the ``create_experiment`` command as:
 
    kitedb create_experiment PROJECT_NAME EXPERIMENT_NAME
 
-If this is your first time running kitedb you will need to initialize the database
+If this is your first time running ``kitedb`` you will need to initialize the database
 
 .. code-block:: bash
 
