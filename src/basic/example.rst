@@ -198,7 +198,7 @@ The simplest way to do that is to cd into the repository folder called `scripts`
 
    cd scripts && ./create.sh
 
-The contents of the ``01_import.sh`` file are very simple:
+The contents of the ``create.sh`` file are short:
 
 .. code-block:: bash
 
@@ -216,6 +216,13 @@ The contents of the ``01_import.sh`` file are very simple:
     $CREATE_SIMPLE $WORKFLOW_DIR/02_conformer.yaml
 
 The ``create.sh`` script essentially create one job per ``ChemNode`` satisfying the rules described in the ``02_conformer.yaml`` file (``kitedb create_from_file simple`` command).
+
+.. important::
+
+   You can notice that the ``create.sh`` file does not specify the ``MKITE_ENV``, and thus assumes that the variable specifying the database credentials has been exported by the user elsewhere.
+   However, you can also edit the ``create.sh`` file to explicitly define the ``MKITE_ENV`` for this set of scripts.
+   This is useful if you have multiple projects at once, each of which has a different database.
+
 The ``02_conformer.yaml`` file, on its turn, is also somewhat straightforward to understand:
 
 .. code-block:: yaml
@@ -249,8 +256,127 @@ Now, you can open the shell to the database again with ``kitedb shell_plus`` and
 
 The status ``Y`` of the jobs indicate that they are ready to be submitted to an engine.
 
-in the folder `scripts`, run `submit.sh` to send the jobs to the Redis engine (make sure you point to the right credentials file by editing the script)
-use `mkwind` (build, run, postprocess) to handle the job execution with pueue and interface with Redis. It should create 388 jobs of conformer generation for the molecules, which is enough to demonstrate that the HTS engine is useful, and too much to run by hand.
-the jobs will run quite fast, be postprocessed, and return to the redis engine
+Submitting the jobs
+-------------------
+
+The streamlineed way to submit the newly-created jobs is to enter the folder `scripts` and run `submit.sh` to send the jobs to the Redis engine:
+
+.. code-block:: bash
+
+   cd scripts
+   ./submit.sh
+
+You will see that the contents of the ``submit.sh`` database only involve calling a single command in ``kitedb`` per recipe:
+
+.. code-block:: bash
+
+    #!/bin/bash
+
+    echo "----------------------------"
+    echo $(date)
+    echo "----------------------------"
+
+    export ENGINE=$MKITE_CFG/engines/redis-hydrogen.yaml
+
+    SUBMIT="kitedb submit $ENGINE"
+
+    #$SUBMIT -r vasp.rpbe.relax
+    #$SUBMIT -r vasp.rpbe.static
+    #$SUBMIT -r catalysis.surfgen
+    #$SUBMIT -r catalysis.supercell
+    #$SUBMIT -r catalysis.coverage
+    $SUBMIT -r conformer.generation
+
+In this case, the jobs in the database are submitted to the engine defined by the configuration file ``ENGINE``, which, on this example, is found in the directory ``$MKITE_CFG/engines/redis-hydrogen.yaml``.
+
+.. note::
+
+   Once again, you should specify your own configuration file for the ``$ENGINE``.
+   It can be anywhere, and not only defined by the ``MKITE_CFG`` environmental variable.
+
+
+.. tip::
+
+   One useful trick about commenting the different recipes is that you can always uncomment and comment them based on the workflow you are running.
+   In principle, there is no drawback in having them all activated, as ``mkite`` only submits jobs when they have status ``READY`` in the database.
+   If no jobs with status ``READY`` are found in the database, then no jobs are submitted and the ``kitedb submit $ENGINE`` command exits without an error.
+
+
+Now, if you were to open the ``kitedb shell_plus`` command again, you can see the status of the jobs:
+
+.. code-block:: python
+
+   jobs = Job.objects.filter(recipe__name="conformer.generation", experiment__name="02_conformer")
+   print(list(jobs.values_list("status", flat=True).unique()))
+
+The result should be only a list containing ``["R"]``, which says that there is a single status for all the jobs with recipe ``conformer.generation`` and experiment ``02_conformer``: running (``R``).
+
+Running the jobs
+----------------
+
+As the jobs have been submitted, you can now execute them directly.
+If you are familiar with Redis, you can also access that database and verify that the jobs have been, indeed, submitted there.
+We will skip the instructions on how to do this on this tutorial, and approach it in an advanced tutorial.
+For now, however, you can use ``mkwind`` to handle the job execution with pueue and interface with Redis.
+The ``mkwind`` package has three subcommands that interface with the engine, thus building, running, and executing the jobs appropriately.
+We will describe each of these commands separately below.
+
+Building the jobs
+^^^^^^^^^^^^^^^^^
+
+To build the jobs, simply run the corresponding command for ``mkwind`` using your configurations (which are assumed to be under the ``$MKITE_CFG/mkwind/settings.yaml`` file:
+
+.. code-block:: bash
+
+   mkwind build -s $MKITE_CFG/mkwind/settings.yaml -l 60
+
+The command above will start the ``mkwind build`` daemon.
+As described in the tutorial for mkwind, this connects with the Redis engine, builds the jobs locally along with the required folder structure and jobs.
+In this tutorial, it should create 388 jobs of conformer generation for the molecules.
+This is an interesting example, as 388 is enough to demonstrate that the simulation pipeline is useful while also being inconvenient to generate by hand.
+
+.. note::
+
+   The daemon may have a limit on the number of jobs that have been built, as specified by the ``settings.yaml`` file for the ``mkwind`` command.
+   This is on purpose - if one wants to distribute as many jobs as possible, they would build a minimal number of jobs that will be submitted, and take advantage of other available computational resources that may be idle.
+   By limiting the number of jobs that have been built, the mkite infrastructure naturally distributes the jobs in whatever is available **and** has a ``mkwind`` daemon running.
+
+You can check that the jobs have been built by going to the folder that you selected as your local engine.
+There, you will see a folder structure in which each folder is a different job.
+These job folders contain the information necessary to run the job under the ``jobinfo.json`` file and the ``job.sh`` file that will be executed by the scheduler.
+
+Executing the jobs
+^^^^^^^^^^^^^^^^^^
+
+Running the jobs is just a matter of running the mkwind daemon to execute them:
+
+.. code-block:: bash
+
+   mkwind run -s $MKITE_CFG/mkwind/settings.yaml -l 60
+
+Once again, this will create a ``mkwind run`` daemon that will update every 60 seconds (specified by the ``-l 60``).
+The utility of the ``mkwind run`` daemon is to avoid overwhelming a queue with new jobs while also monitoring it for job completions.
+The job folder that was built will be transferred to a local folder called ``queue-doing``, where it will remain until the job is completed.
+
+If you are using ``pueue`` for the local job management, you can verify that the jobs are running by using the scheduler-specific command line interface:
+
+.. code-block:: bash
+
+   pueue status
+
+And the number of parallel jobs can be tuned with the same commands. For example, to run 4 jobs at the same time, simply run:
+
+.. code-block:: bash
+
+   pueue parallel 4
+
+Once the jobs are done, ``mkwind run`` will transfer them automatically to a folder called ``queue-done``.
+Because of the nature of the small molecules and the conformer generation, the jobs will run quite fast, as is reported by the ``mkwind run`` daemon.
+
+Postprocessing the jobs
+^^^^^^^^^^^^^^^^^^^^^^^
+
+Once the jobs
+
 in the folder `scripts`, run `parse.sh` to make the production database access the redis engine and ingest the results into the postgresql db.
 from there on, you should be able to query your results.
