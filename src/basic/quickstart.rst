@@ -279,4 +279,6 @@ You could create thousands of files and use an excellent tool like `GNU Parallel
 - How to handle different schedulers and clusters?
 - ...
 
-This is where this quickstart stops. For more on the questions above and how to perform high-throughput calculations using mkite, proceed to the :doc:`../basic/index`.
+This is where this quickstart stops.
+For more on the questions above and how to understand the mkite structure that enables high-throughput calculations, proceed to the :doc:`../basic/index`.
+For a practical demonstration on how to do that, proceed to the :doc:`step-by-step practical example </basic/example>`.
