@@ -20,8 +20,8 @@ Requirements
 * You should have a functional scheduler where to run the jobs. If you are running on an HPC server that has SLURM, for instance, you can specify that on the configuration file above.
   If you would like to run the files locally (like this example), you can install a scheduler such as `pueue <TODO>`_ to manage the job submissions.
 
-Downloading the example
------------------------
+Downloading and understanding the example
+-----------------------------------------
 
 In a folder of interest, download the code for the examples:
 
@@ -127,6 +127,11 @@ This initializes the project and experiments for this example.
     This is a design choice: you could want to create them automatically.
     However, it is safer for the user to define which are the names of experiments that are desired when organizing the workflow.
 
+If you have not done so, also update your database with the recipes available:
+
+.. code-block:: bash
+
+   kitedb scanrecipes
 
 After initializing the database and the experiments, make sure that your Redis and ``pueued`` daemons are running correctly, and that you have the right configurations for them.
 
@@ -164,10 +169,86 @@ The result should show 388 molecules, which is the number of distinct SMILES in 
 
    Num. molecules: 388
 
+If you want to determine a more advanced query, you could find, for instance, how many molecules contain phosphonium ions:
+
+.. code-block:: python
+
+    query = Molecule.objects.filter(smiles__contains="[P+]")
+    print(f"Num. molecules: {query.count()}")
+
+You can also analyze the jobs to understand that mkite created a separate job for each molecule that was added to the database:
+
+.. code-block:: python
+
+    mol = Molecule.objects.first()
+    job = mol.parentjob
+    print(job.options)
+
+All other operations you would expect from Django are available.
+
+Creating new jobs for the molecules
+-----------------------------------
+
+Once the molecules have been added to the database, you can create new jobs for these molecules.
+As described in the mkite paper, the ``Molecule`` object is a subclass of ``ChemNode``, so jobs can be created for these nodes of interest.
+The simplest way to do that is to cd into the repository folder called `scripts`, run `create.sh` to create the jobs in the database:
 
 
-cd into the repository folder called `scripts`, run `create.sh` to create the jobs in the database
-use `kitedb shell_plus` and query the jobs to see if they were created successfully
+.. code-block:: bash
+
+   cd scripts && ./create.sh
+
+The contents of the ``01_import.sh`` file are very simple:
+
+.. code-block:: bash
+
+    #!/bin/bash
+
+    echo "----------------------------"
+    echo $(date)
+    echo "----------------------------"
+
+    WORKFLOW_DIR="$PWD/../workflows"
+
+    CREATE_SIMPLE="kitedb create_from_file simple"
+    CREATE_TUPLE="kitedb create_from_file tuple"
+
+    $CREATE_SIMPLE $WORKFLOW_DIR/02_conformer.yaml
+
+The ``create.sh`` script essentially create one job per ``ChemNode`` satisfying the rules described in the ``02_conformer.yaml`` file (``kitedb create_from_file simple`` command).
+The ``02_conformer.yaml`` file, on its turn, is also somewhat straightforward to understand:
+
+.. code-block:: yaml
+
+    # Create conformer job for each of the SMILES imported in the previous step
+    - out_experiment: 02_conformer
+      out_recipe: conformer.generation
+      inputs:
+        - filter:
+            parentjob__experiment__name: 01_import
+            parentjob__recipe__name: dbimport.MolFileImporter
+      tags:
+        - confgen
+
+This file specifies the creation of the job that has the following requirements:
+
+- ``out_experiment``: the job to be created will correspond to the experiment ``02_conformer``.
+  This is useful to organize the results of the calculations with interpretable tags, which are very helpful when performing queries and analyses.
+- ``out_recipe``: the job to be created will have the recipe ``conformer.generation``. This recipe is assumed to be in the database already, having been added after the ``kitedb scanrecipes`` and installing the ``mkite_conformer`` plugin.
+- ``inputs``: one job will be created for each of the inputs (``ChemNodes``) that satisfy the proposed filter. In this case, jobs are only created for ``ChemNodes`` whose parent jobs (i.e., the job that created them) belong to the experiment ``01_import`` and have been created with the recipe ``dbimport.MolFileImporter``.
+- ``tags``: the tag ``confgen`` is applied to all jobs created by this file. Tags are arbitrary and optional, and are only useful if the user requires them for any reason.
+
+Once you understand the file structure of workflows, you can start connecting the YAML files to define your own workflows.
+
+Now, you can open the shell to the database again with ``kitedb shell_plus`` and query the jobs to see if they were created successfully:
+
+.. code-block:: python
+
+   jobs = Job.objects.filter(recipe__name="conformer.generation", status="Y")
+   print(jobs.count())
+
+The status ``Y`` of the jobs indicate that they are ready to be submitted to an engine.
+
 in the folder `scripts`, run `submit.sh` to send the jobs to the Redis engine (make sure you point to the right credentials file by editing the script)
 use `mkwind` (build, run, postprocess) to handle the job execution with pueue and interface with Redis. It should create 388 jobs of conformer generation for the molecules, which is enough to demonstrate that the HTS engine is useful, and too much to run by hand.
 the jobs will run quite fast, be postprocessed, and return to the redis engine
