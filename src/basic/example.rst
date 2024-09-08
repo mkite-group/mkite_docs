@@ -52,7 +52,7 @@ For example:
     - smiles: "CCCCN"
     - smiles: "c1ccncc1"
 
-The list of molecules was selected from the list of SMILES from [this paper](https://doi.org/10.1126/science.abh3350) as an example for this tutorial.
+The list of molecules was selected from a subset of SMILES from `this paper <https://doi.org/10.1126/science.abh3350>`_ as an example for this tutorial.
 
 Workflows
 ^^^^^^^^^
