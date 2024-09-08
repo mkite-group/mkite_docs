@@ -11,7 +11,7 @@ The most basic ``mkite`` package that should be installed is ``mkite_core``. Ins
 
    pip install mkite_core
 
-The `mkite_core` will provide most functions to execute a job in any given client. Nevertheless, advanced job management in clients would often require the installation of two additional mkite packages: ``mkite_engines`` and ``mkwind`` to manage the jobs. You can install them using
+The ``mkite_core`` will provide most functions to execute a job in any given client. Nevertheless, advanced job management in clients would often require the installation of two additional mkite packages: ``mkite_engines`` and ``mkwind`` to manage the jobs. You can install them using
 
 Client/engines
 --------------

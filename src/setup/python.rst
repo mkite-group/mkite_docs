@@ -9,7 +9,7 @@ First, install either Miniconda (https://docs.conda.io/en/latest/miniconda.html)
 
 .. code-block:: bash
 
-    conda create -n mkite python=3.8
+    conda create -n mkite python=3.10
 
 To activate the newly created environment, run:
 
@@ -37,4 +37,3 @@ To activate the newly created environment, run:
 .. code-block:: bash
 
     source mkite/bin/activate
-
