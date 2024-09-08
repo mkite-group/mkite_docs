@@ -223,6 +223,12 @@ The ``create.sh`` script essentially create one job per ``ChemNode`` satisfying 
    However, you can also edit the ``create.sh`` file to explicitly define the ``MKITE_ENV`` for this set of scripts.
    This is useful if you have multiple projects at once, each of which has a different database.
 
+.. important::
+
+   The ``create.sh`` file can be executed multiple times without creating duplicate jobs.
+   By default, the behavior of ``kitedb create_from_file`` is to ignore requests of creating jobs with the exact same specifications (e.g., experiment name and recipe name).
+   This prevents duplication of jobs in the database, and allows a structured database according to the experiments and other hierarchies.
+
 The ``02_conformer.yaml`` file, on its turn, is also somewhat straightforward to understand:
 
 .. code-block:: yaml
@@ -440,4 +446,24 @@ which says that all 388 jobs have status ``DONE``.
 Querying the results
 --------------------
 
-Once the jobs
+Once the jobs have been completed, one can use the results in a straightforward manner.
+For example, you can open a ``kitedb shell_plus`` and export the results into an xyz file using ASE and performing the desired queries:
+
+.. code-block:: python
+
+    jobs = Job.objects.filter(recipe__name="conformer.generation", experiment__name="02_conformer")
+    mols = Molecule.objects.filter(smiles__contains="[P+]")
+    confs = Conformer.objects.filter(parentjob__in=jobs, mol__in=mols)
+
+    from ase.io import write
+
+    dset = [conf.as_info().as_ase() for conf in confs]
+    write("phosphonium.xyz", dset, format="extxyz")
+
+This creates a dataset of molecules called ``phosphonium.xyz`` containing all the conformers of phosphonium-containing molecules.
+
+Creating downstream jobs
+------------------------
+
+Creating downstream jobs is only a matter of writing new workflow files and adding them to the ``create.sh`` file.
+We suggest you write your own jobs, add them to the ``workflow`` folder, and start creating sequences of jobs adequately.
