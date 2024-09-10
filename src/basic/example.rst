@@ -27,7 +27,7 @@ In a folder of interest, download the code for the examples:
 
 .. code-block:: bash
 
-   git clone https://github.com/mkite-group/example_project
+   git clone https://github.com/mkite-group/example_project.git
 
 This project has the following file structure:
 
